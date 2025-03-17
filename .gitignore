@@ -2,3 +2,4 @@ venv
 alembic
 *.pyc
 *.pyo
+.idea
