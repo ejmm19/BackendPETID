@@ -1,0 +1,97 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="3">
+            <item index="0" class="java.lang.String" itemvalue="@click" />
+            <item index="1" class="java.lang.String" itemvalue=":key" />
+            <item index="2" class="java.lang.String" itemvalue="v-for" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyInterpreterInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="ignoredPackages">
+        <value>
+          <list size="62">
+            <item index="0" class="java.lang.String" itemvalue="PyMySQL" />
+            <item index="1" class="java.lang.String" itemvalue="Flask-SQLAlchemy" />
+            <item index="2" class="java.lang.String" itemvalue="Flask" />
+            <item index="3" class="java.lang.String" itemvalue="tzlocal" />
+            <item index="4" class="java.lang.String" itemvalue="pusher" />
+            <item index="5" class="java.lang.String" itemvalue="tweepy" />
+            <item index="6" class="java.lang.String" itemvalue="bs4" />
+            <item index="7" class="java.lang.String" itemvalue="arrow" />
+            <item index="8" class="java.lang.String" itemvalue="PyYAML" />
+            <item index="9" class="java.lang.String" itemvalue="BitstampClient" />
+            <item index="10" class="java.lang.String" itemvalue="ftfy" />
+            <item index="11" class="java.lang.String" itemvalue="short-url" />
+            <item index="12" class="java.lang.String" itemvalue="stripe" />
+            <item index="13" class="java.lang.String" itemvalue="razorpay" />
+            <item index="14" class="java.lang.String" itemvalue="PyPDF2" />
+            <item index="15" class="java.lang.String" itemvalue="xlrd" />
+            <item index="16" class="java.lang.String" itemvalue="Werkzeug" />
+            <item index="17" class="java.lang.String" itemvalue="dydx-v3-python" />
+            <item index="18" class="java.lang.String" itemvalue="analytics-python" />
+            <item index="19" class="java.lang.String" itemvalue="sendgrid" />
+            <item index="20" class="java.lang.String" itemvalue="APScheduler" />
+            <item index="21" class="java.lang.String" itemvalue="psutil" />
+            <item index="22" class="java.lang.String" itemvalue="simplejson" />
+            <item index="23" class="java.lang.String" itemvalue="attrs" />
+            <item index="24" class="java.lang.String" itemvalue="coinex.py" />
+            <item index="25" class="java.lang.String" itemvalue="pandas-market-calendars" />
+            <item index="26" class="java.lang.String" itemvalue="boto3" />
+            <item index="27" class="java.lang.String" itemvalue="coinbase" />
+            <item index="28" class="java.lang.String" itemvalue="Flask-Excel" />
+            <item index="29" class="java.lang.String" itemvalue="SQLAlchemy" />
+            <item index="30" class="java.lang.String" itemvalue="kucoin-futures-python" />
+            <item index="31" class="java.lang.String" itemvalue="numpy" />
+            <item index="32" class="java.lang.String" itemvalue="awscli" />
+            <item index="33" class="java.lang.String" itemvalue="Jinja2" />
+            <item index="34" class="java.lang.String" itemvalue="Flask-Login" />
+            <item index="35" class="java.lang.String" itemvalue="python-resize-image" />
+            <item index="36" class="java.lang.String" itemvalue="tenacity" />
+            <item index="37" class="java.lang.String" itemvalue="python-binance" />
+            <item index="38" class="java.lang.String" itemvalue="Flask-JWT-Extended" />
+            <item index="39" class="java.lang.String" itemvalue="xmltodict" />
+            <item index="40" class="java.lang.String" itemvalue="itsdangerous" />
+            <item index="41" class="java.lang.String" itemvalue="Flask-Cors" />
+            <item index="42" class="java.lang.String" itemvalue="botocore" />
+            <item index="43" class="java.lang.String" itemvalue="pytest" />
+            <item index="44" class="java.lang.String" itemvalue="flasgger" />
+            <item index="45" class="java.lang.String" itemvalue="kucoin-python" />
+            <item index="46" class="java.lang.String" itemvalue="dateparser" />
+            <item index="47" class="java.lang.String" itemvalue="python-intercom" />
+            <item index="48" class="java.lang.String" itemvalue="python-gitlab" />
+            <item index="49" class="java.lang.String" itemvalue="oandapyV20" />
+            <item index="50" class="java.lang.String" itemvalue="Flask-Compress" />
+            <item index="51" class="java.lang.String" itemvalue="pandas" />
+            <item index="52" class="java.lang.String" itemvalue="monedadigitalg" />
+            <item index="53" class="java.lang.String" itemvalue="Unidecode" />
+            <item index="54" class="java.lang.String" itemvalue="Flask-Migrate" />
+            <item index="55" class="java.lang.String" itemvalue="cachetools" />
+            <item index="56" class="java.lang.String" itemvalue="flask-paginate" />
+            <item index="57" class="java.lang.String" itemvalue="aiohttp" />
+            <item index="58" class="java.lang.String" itemvalue="pycryptodome" />
+            <item index="59" class="java.lang.String" itemvalue="geoip2" />
+            <item index="60" class="java.lang.String" itemvalue="Flask-RESTful" />
+            <item index="61" class="java.lang.String" itemvalue="openpyxl" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N806" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+  </profile>
+</component>

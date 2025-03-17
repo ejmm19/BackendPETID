@@ -1,0 +1,27 @@
+services:
+  api:
+    build: .
+    container_name: fastapi_app_petID
+    ports:
+      - "5000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:rootpassword@db/fastapi_db_petID
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db_petID
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: fastapi_db_petID
+      MYSQL_USER: fastapi_user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3389:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

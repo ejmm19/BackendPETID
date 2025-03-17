@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+pymysql
+email-validator
+bcrypt
+alembic
+cryptography
+starlette
+pyjwt
