@@ -32,11 +32,14 @@ class PostCreate(PostBase):
 
 class PostResponse(BaseModel):
     parent_id: int
+    id: int
     title: str
     type: str
     content: str
     created_at: datetime
     updated_at: datetime
+    likes: int
+    liked_by_user: bool
 
     class Config:
         from_attributes = True
