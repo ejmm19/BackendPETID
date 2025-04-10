@@ -23,7 +23,6 @@ class UserCreateResponse(BaseModel):
     access_token: str
 
 class PostBase(BaseModel):
-    title: str
     type: str
     content: str
 
@@ -33,7 +32,19 @@ class PostCreate(PostBase):
 class PostResponse(BaseModel):
     parent_id: int
     id: int
-    title: str
+    type: str
+    content: str
+    created_at: datetime
+    updated_at: datetime
+    likes: int
+    liked_by_user: bool
+
+    class Config:
+        from_attributes = True
+
+class PostResponseFeed(BaseModel):
+    parent_user: str
+    id: int
     type: str
     content: str
     created_at: datetime

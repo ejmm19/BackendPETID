@@ -15,7 +15,6 @@ class Post(Base):
     __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    title = Column(String(255), nullable=False)
     parent_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     type = Column(String(50), nullable=False)
     content = Column(String(255), nullable=False)

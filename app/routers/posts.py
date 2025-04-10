@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPAuthorizationCredentials
 from app.database import get_db
-from app.schemas import PostCreate, PostResponse
-from app.services.posts import create_post, get_post, update_post, delete_post, get_all_posts, toggle_like
+from app.schemas import PostCreate, PostResponse, PostResponseFeed
+from app.services.posts import *
 from app.utils.token import decode_token, security
 from typing import List
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
-@router.post("/", response_model=PostResponse)
+@router.post("/")
 def create_post_endpoint(post: PostCreate, db: Session = Depends(get_db), token: HTTPAuthorizationCredentials = Security(security)):
     user_id = decode_token(token.credentials)
     return create_post(post, db, user_id)
@@ -18,6 +18,11 @@ def create_post_endpoint(post: PostCreate, db: Session = Depends(get_db), token:
 def get_all_posts_endpoint(db: Session = Depends(get_db), limit: int = 10, token: HTTPAuthorizationCredentials = Security(security)):
     user_id = decode_token(token.credentials)
     return get_all_posts(db, user_id, limit)
+
+@router.get("/feed", response_model=List[PostResponseFeed])
+def get_all_posts_endpoint(db: Session = Depends(get_db), limit: int = 10, token: HTTPAuthorizationCredentials = Security(security)):
+    user_id = decode_token(token.credentials)
+    return get_feed(db, user_id, limit)
 
 @router.get("/{post_id}", response_model=PostResponse)
 def get_post_endpoint(post_id: int, db: Session = Depends(get_db), token: HTTPAuthorizationCredentials = Security(security)):
