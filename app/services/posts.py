@@ -34,13 +34,14 @@ def get_all_posts(db: Session, user_id, limit: int = 10) -> List[PostResponse]:
     return post_responses
 
 def get_feed(db: Session, user_id, limit: int = 10) -> List[PostResponseFeed]:
-    posts = db.query(Post).limit(limit).all()
+    posts = db.query(Post).order_by(Post.created_at.desc()).limit(limit).all()
     post_responses = []
     for post in posts:
         likes_count = get_likes(post.id, db)
         liked_by_user = is_liked_by_user(user_id, post.id, db)
         parent_user = db.query(User).filter(User.id == post.parent_id).first()
         post_responses.append(PostResponseFeed(
+            parent_user_id=parent_user.id,
             parent_user=parent_user.first_name + " " + parent_user.last_name,
             id=post.id,
             type=post.type,

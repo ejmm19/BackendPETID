@@ -43,6 +43,7 @@ class PostResponse(BaseModel):
         from_attributes = True
 
 class PostResponseFeed(BaseModel):
+    parent_user_id: int
     parent_user: str
     id: int
     type: str
