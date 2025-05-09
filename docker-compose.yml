@@ -3,7 +3,7 @@ services:
     build: .
     container_name: fastapi_app_petID
     ports:
-      - "5000:8000"
+      - "8000:8000"
     depends_on:
       - db
     environment:

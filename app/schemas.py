@@ -10,6 +10,7 @@ class UserCreate(UserBase):
     password: str
 
 class UserResponse(BaseModel):
+    id: int
     first_name: str
     last_name: str
     email: str
@@ -24,6 +25,7 @@ class UserCreateResponse(BaseModel):
 
 class PostBase(BaseModel):
     type: str
+    image: str
     content: str
 
 class PostCreate(PostBase):
@@ -48,6 +50,7 @@ class PostResponseFeed(BaseModel):
     id: int
     type: str
     content: str
+    image: str
     created_at: datetime
     updated_at: datetime
     likes: int
@@ -59,3 +62,27 @@ class PostResponseFeed(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class LostPetReportBase(BaseModel):
+    pet_name: str
+    species: str
+    breed: str
+    color: str
+    image: str
+    gender: str
+    lost_date: datetime
+    last_seen_location: str
+    additional_details: str
+    contact_phone: str
+    contact_email: EmailStr
+
+class LostPetReportCreate(LostPetReportBase):
+    pass
+
+class LostPetReportResponse(LostPetReportBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True

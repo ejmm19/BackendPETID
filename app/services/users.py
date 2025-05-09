@@ -41,6 +41,7 @@ def authenticate_user(email: str, password: str, db: Session) -> dict:
 
     token = generate_token(user.id)
     user_data = {
+        "id": user.id,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
