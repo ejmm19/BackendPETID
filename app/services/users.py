@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from app.models import User
+from app.models import User, MediaProfile
 from app.schemas import UserCreate, UserCreateResponse
 import bcrypt
 from app.utils.token import generate_token
@@ -32,7 +32,18 @@ def get_user(user_id: int, db: Session) -> User:
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return user
+
+    media_profiles = get_media_profile(user_id, db)
+
+    user_data = {
+        "id": user.id,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+        "media": media_profiles,
+        "created_at": user.created_at
+    }
+    return user_data
 
 def authenticate_user(email: str, password: str, db: Session) -> dict:
     user = db.query(User).filter(User.email == email).first()
@@ -44,7 +55,13 @@ def authenticate_user(email: str, password: str, db: Session) -> dict:
         "id": user.id,
         "first_name": user.first_name,
         "last_name": user.last_name,
+        "media": {},
         "email": user.email,
         "created_at": user.created_at
     }
     return {"access_token": token, "user_data": user_data}
+
+def get_media_profile(user_id: int, db: Session) -> dict:
+    media_profiles = db.query(MediaProfile).filter(MediaProfile.user_id == user_id).all()
+    media = {profile.media_type: profile.image_url for profile in media_profiles}
+    return media

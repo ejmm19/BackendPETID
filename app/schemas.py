@@ -14,6 +14,7 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     email: str
+    media: dict
     created_at: datetime
 
     class Config:

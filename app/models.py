@@ -78,3 +78,13 @@ class PostImage(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
     image_url = Column(String(255), nullable=False)
+
+class MediaProfile(Base):
+    __tablename__ = "media_profiles"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    media_type = Column(String(50), nullable=False)  # e.g., 'profile', 'cover'
+    image_url = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
