@@ -61,6 +61,17 @@ def authenticate_user(email: str, password: str, db: Session) -> dict:
     }
     return {"access_token": token, "user_data": user_data}
 
+def add_media_profile(user_id: int, media_type: str, image_base64: str, db: Session) -> dict:
+    existing_profile = db.query(MediaProfile).filter(MediaProfile.user_id == user_id, MediaProfile.media_type == media_type).first()
+    image_url = 'https://placehold.co/100x100'
+    if existing_profile:
+        existing_profile.image_url = image_url
+    else:
+        new_profile = MediaProfile(user_id=user_id, media_type=media_type, image_url=image_url)
+        db.add(new_profile)
+    db.commit()
+    return {"message": "Media profile updated successfully"}
+
 def get_media_profile(user_id: int, db: Session) -> dict:
     media_profiles = db.query(MediaProfile).filter(MediaProfile.user_id == user_id).all()
     media = {profile.media_type: profile.image_url for profile in media_profiles}

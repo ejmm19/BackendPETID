@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from app.database import get_db
 from fastapi.security import HTTPAuthorizationCredentials
-from app.models import User
+from app.models import User, MediaProfile
 from app.schemas import UserCreate, UserResponse, UserCreateResponse, UserLogin
 from app.utils.token import decode_token, security
 import bcrypt
-from app.services.users import create_user, get_user, authenticate_user
+from app.services.users import *
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -32,3 +32,14 @@ def validate_token_endpoint(token: HTTPAuthorizationCredentials = Security(secur
 def login_user_endpoint(user: UserLogin, db: Session = Depends(get_db)):
     response = authenticate_user(user.email, user.password, db)
     return response
+
+# route for add media profile
+@router.post("/media-profile")
+def add_media_profile_endpoint(user_id: int, media_type: str, image_base64, db: Session = Depends(get_db), token: HTTPAuthorizationCredentials = Security(security)):
+    validate_token_endpoint(token)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    add_media_profile(user_id, media_type, image_base64, db)
+
+    return {"message": "Media profile added successfully"}
