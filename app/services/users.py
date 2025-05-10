@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.models import User, MediaProfile
-from app.schemas import UserCreate, UserCreateResponse
-import bcrypt
+from app.schemas import UserCreate, UserCreateResponse, MediaProfileBase
+from app.services.posts import upload_file
+import bcrypt, time
 from app.utils.token import generate_token
 
 def create_user(user: UserCreate, db: Session) -> UserCreateResponse:
@@ -61,13 +62,14 @@ def authenticate_user(email: str, password: str, db: Session) -> dict:
     }
     return {"access_token": token, "user_data": user_data}
 
-def add_media_profile(user_id: int, media_type: str, image_base64: str, db: Session) -> dict:
-    existing_profile = db.query(MediaProfile).filter(MediaProfile.user_id == user_id, MediaProfile.media_type == media_type).first()
-    image_url = 'https://placehold.co/100x100'
+def add_media_profile(media_profile: MediaProfileBase, db: Session) -> dict:
+    existing_profile = db.query(MediaProfile).filter(MediaProfile.user_id == media_profile.user_id, MediaProfile.media_type == media_profile.media_type).first()
+    file_name = f"{media_profile.user_id}_{int(time.time())}"
+    image_url = upload_file(media_profile.image_base64, file_name)
     if existing_profile:
         existing_profile.image_url = image_url
     else:
-        new_profile = MediaProfile(user_id=user_id, media_type=media_type, image_url=image_url)
+        new_profile = MediaProfile(user_id=media_profile.user_id, media_type=media_profile.media_type, image_url=image_url)
         db.add(new_profile)
     db.commit()
     return {"message": "Media profile updated successfully"}

@@ -87,3 +87,8 @@ class LostPetReportResponse(LostPetReportBase):
 
     class Config:
         orm_mode = True
+
+class MediaProfileBase(BaseModel):
+    user_id: int
+    media_type: str
+    image_base64: str
