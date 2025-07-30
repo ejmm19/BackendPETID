@@ -51,6 +51,13 @@ def create_lost_pet_report(report: LostPetReportCreate, db: Session = Depends(ge
     user_id = decode_token(token.credentials)
     return create_report(report, user_id, db)
 
+@router.get("/report/{report_id}", response_model=LostPetReportResponse, summary="Obtener un reporte por su ID")
+def get_single_report_endpoint(
+    report_id: int,
+    db: Session = Depends(get_db)
+):
+    return get_report_by_id(db=db, report_id=report_id)
+
 @router.get("/lost-pets", response_model=List[LostPetReportResponse])
 def get_lost_pet_reports(db: Session = Depends(get_db), limit: int = 10, token: HTTPAuthorizationCredentials = Security(security)):
     user_id = decode_token(token.credentials)

@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from datetime import datetime
 from typing import List, Union, Dict, Any
+import json
 
 class UserBase(BaseModel):
     first_name: str
@@ -73,13 +74,21 @@ class LostPetReportBase(BaseModel):
     image: str
     gender: str
     lost_date: datetime
-    last_seen_location: Dict[str, Any]
+    last_seen_location: Dict[str, float]
     additional_details: str
     contact_phone: str
     contact_email: EmailStr
 
 class LostPetReportCreate(LostPetReportBase):
-    pass
+    @field_validator("last_seen_location", mode='before')
+    @classmethod
+    def parse_location(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                raise ValueError("El string de ubicación no es un JSON válido")
+        return v
 
 class LostPetReportResponse(LostPetReportBase):
     id: int

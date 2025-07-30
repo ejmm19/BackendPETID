@@ -237,6 +237,37 @@ def create_report(report, user_id: int, db: Session) -> dict:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
+
+def get_report_by_id(db: Session, report_id: int) -> LostPetReportResponse:
+    report = db.query(LostPetReport).filter(LostPetReport.id == report_id).first()
+
+    if not report:
+        raise HTTPException(status_code=404, detail="Reporte no encontrado")
+
+    last_seen_data = report.last_seen_location
+    if isinstance(last_seen_data, str):
+        try:
+            last_seen_data = json.loads(last_seen_data)
+        except json.JSONDecodeError:
+            last_seen_data = {}  # o algún valor por defecto
+
+    return LostPetReportResponse(
+        id=report.id,
+        pet_name=report.pet_name,
+        species=report.species,
+        breed=report.breed,
+        color=report.color,
+        image=report.image,
+        gender=report.gender,
+        lost_date=report.lost_date,
+        last_seen_location=last_seen_data,
+        additional_details=report.additional_details,
+        contact_phone=report.contact_phone,
+        contact_email=report.contact_email,
+        created_at=report.created_at.replace(tzinfo=timezone.utc),
+        updated_at=report.updated_at.replace(tzinfo=timezone.utc)
+    )
+
 def upload_file(file_base64, file_name: str) -> str:
     if file_base64.startswith("data:image"):
         image_format = file_base64.split(";")[0].split("/")[1]  # Obtiene el formato (e.g., png, jpg)
