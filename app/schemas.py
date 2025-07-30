@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import List, Union, Dict, Any
 
 class UserBase(BaseModel):
     first_name: str
@@ -72,7 +73,7 @@ class LostPetReportBase(BaseModel):
     image: str
     gender: str
     lost_date: datetime
-    last_seen_location: str
+    last_seen_location: Dict[str, Any]
     additional_details: str
     contact_phone: str
     contact_email: EmailStr
@@ -86,7 +87,11 @@ class LostPetReportResponse(LostPetReportBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class FeedItem(BaseModel):
+    item_type: str  # 'post' o 'lost_pet_report'
+    data: Union[PostResponseFeed, LostPetReportResponse]
 
 class MediaProfileBase(BaseModel):
     user_id: int

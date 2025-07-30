@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Security
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPAuthorizationCredentials
 from app.database import get_db
-from app.schemas import PostCreate, PostResponse, PostResponseFeed, LostPetReportCreate, LostPetReportResponse
+from app.schemas import PostCreate, PostResponse, PostResponseFeed, LostPetReportCreate, LostPetReportResponse, FeedItem
 from app.services.posts import *
 from app.utils.token import decode_token, security
 from typing import List
@@ -19,11 +19,16 @@ def get_all_posts_endpoint(db: Session = Depends(get_db), limit: int = 10, token
     user_id = decode_token(token.credentials)
     return get_all_posts(db, user_id, limit)
 
-@router.get("/feed", response_model=List[PostResponseFeed])
-def get_all_posts_endpoint(db: Session = Depends(get_db), limit: int = 10, token: HTTPAuthorizationCredentials = Security(security)):
+@router.get("/feed", response_model=List[FeedItem])
+def get_all_posts_endpoint(db: Session = Depends(get_db), limit: int = 10, page: int = 1, token: HTTPAuthorizationCredentials = Security(security)):
     user_id = decode_token(token.credentials)
-    return get_feed(db, user_id, limit)
+    return get_feed(db, user_id, limit, page)
 
+
+@router.get("/posts/me", response_model=List[PostResponseFeed], summary="Obtener los posts del usuario actual")
+def get_my_posts_endpoint(db: Session = Depends(get_db), token: HTTPAuthorizationCredentials = Security(security)):
+    user_id = decode_token(token.credentials)
+    return get_posts_by_user(db=db, user_id=user_id)
 
 @router.put("/{post_id}", response_model=PostResponse)
 def update_post_endpoint(post_id: int, post: PostCreate, db: Session = Depends(get_db), token: HTTPAuthorizationCredentials = Security(security)):
