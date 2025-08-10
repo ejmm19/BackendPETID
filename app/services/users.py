@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from app.models import User, MediaProfile
-from app.schemas import UserCreate, UserCreateResponse, MediaProfileBase
+from app.models import User, MediaProfile, Comment
+from app.schemas import UserCreate, UserCreateResponse, MediaProfileBase, CommentUpdate
 from app.services.posts import upload_file
 import bcrypt, time
 from app.utils.token import generate_token
@@ -27,7 +27,19 @@ def create_user(user: UserCreate, db: Session) -> UserCreateResponse:
     # Generate the token
     token = generate_token(db_user.id)
 
-    return {"user_data": db_user, "access_token": token}
+    # ========================== LA SOLUCIÓN ESTÁ AQUÍ ==========================
+    # En lugar de devolver db_user directamente, creamos un diccionario que
+    # coincide con el schema UserResponse.
+    user_data_response = {
+        "id": db_user.id,
+        "first_name": db_user.first_name,
+        "last_name": db_user.last_name,
+        "email": db_user.email,
+        "created_at": db_user.created_at,
+        "media": {}  # <-- ¡Añadimos el campo 'media' requerido como un diccionario vacío!
+    }
+
+    return {"user_data": user_data_response, "access_token": token}
 
 def get_user(user_id: int, db: Session) -> User:
     user = db.query(User).filter(User.id == user_id).first()
@@ -78,3 +90,18 @@ def get_media_profile(user_id: int, db: Session) -> dict:
     media_profiles = db.query(MediaProfile).filter(MediaProfile.user_id == user_id).all()
     media = {profile.media_type: profile.image_url for profile in media_profiles}
     return media
+
+def update_comment(db: Session, comment_id: int, user_id: int, comment_update: CommentUpdate) -> Comment:
+    db_comment = db.query(Comment).filter(Comment.id == comment_id).first()
+
+    if not db_comment:
+        raise HTTPException(status_code=404, detail="Comentario no encontrado")
+
+    # Verificamos que el usuario que edita es el autor
+    if db_comment.user_id != user_id:
+        raise HTTPException(status_code=403, detail="No tienes permiso para editar este comentario")
+
+    db_comment.content = comment_update.content
+    db.commit()
+    db.refresh(db_comment)
+    return db_comment

@@ -50,6 +50,7 @@ class PostResponse(BaseModel):
 class PostResponseFeed(BaseModel):
     parent_user_id: int
     parent_user: str
+    parent_user_profile_image: dict
     id: int
     type: str
     content: str
@@ -106,3 +107,45 @@ class MediaProfileBase(BaseModel):
     user_id: int
     media_type: str
     image_base64: str
+
+class CommentCreate(BaseModel):
+    content: str
+
+class CommentAuthorResponse(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    media: dict = {}
+
+class CommentResponse(BaseModel):
+    id: int
+    content: str
+    created_at: datetime
+    author: CommentAuthorResponse
+
+    class Config:
+        from_attributes = True
+
+class CommentUpdate(BaseModel):
+    content: str
+
+class PetBase(BaseModel):
+    name: str
+    species: str
+    breed: str
+    color: str
+    image: str
+    gender: str
+    birth_date: datetime
+
+class PetCreate(PetBase):
+    pass
+
+class PetResponse(PetBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True

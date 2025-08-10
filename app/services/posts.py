@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from app.models import Post, Like, User, LostPetReport, UserPostType, PostImage
-from app.schemas import PostCreate, PostResponse, PostResponseFeed, FeedItem, LostPetReportResponse
+from app.models import Post, Like, User, LostPetReport, UserPostType, PostImage, MediaProfile, Comment
+from app.schemas import PostCreate, PostResponse, PostResponseFeed, FeedItem, LostPetReportResponse, CommentCreate, \
+    CommentResponse, CommentAuthorResponse
 from typing import List, Optional
 from app.utils.uploadfile import upload_file_to_s3_base64
 import time
@@ -57,11 +58,21 @@ def get_all_posts(db: Session, user_id, limit: int = 10) -> List[PostResponse]:
         ))
     return post_responses
 
+def get_media_profile(user_id: int, db: Session) -> dict:
+    media_profile = db.query(MediaProfile).filter(
+        MediaProfile.user_id == user_id,
+        MediaProfile.media_type == "profile"
+    ).first()
+    if media_profile:
+        return {"url": media_profile.image_url}
+    return {}
+
+
 
 def get_feed(db: Session, user_id: int, limit: int, page: int) -> List[FeedItem]:
     skip = (page - 1) * limit
     posts_query = db.query(Post).order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
-    reports_query = db.query(LostPetReport).order_by(LostPetReport.created_at.desc()).offset(skip).limit(limit).all()
+    #reports_query = db.query(LostPetReport).order_by(LostPetReport.created_at.desc()).offset(skip).limit(limit).all()
 
     feed_items = []
 
@@ -79,6 +90,7 @@ def get_feed(db: Session, user_id: int, limit: int, page: int) -> List[FeedItem]
         post_data = PostResponseFeed(
             parent_user_id=parent_user.id,
             parent_user=f"{parent_user.first_name} {parent_user.last_name}",
+            parent_user_profile_image= get_media_profile(parent_user.id, db),
             id=post.id,
             type=post.type,
             content=post.content,
@@ -147,6 +159,7 @@ def get_posts_by_user(db: Session, user_id: int) -> List[PostResponseFeed]:
         post_data = PostResponseFeed(
             parent_user_id=parent_user.id,
             parent_user=f"{parent_user.first_name} {parent_user.last_name}",
+            parent_user_profile_image={},
             id=post.id,
             type=post.type,
             content=post.content,
@@ -199,11 +212,20 @@ def delete_post(post_id: int, db: Session):
 
 ## logic for like post
 def toggle_like(user_id: int, post_id: int, db: Session) -> dict:
-    like = Like(user_id=user_id, post_id=post_id)
-    db.add(like)
-    db.commit()
-    db.refresh(like)
-    return {"message": "Like saved successfully"}
+    existing_like = db.query(Like).filter(
+        Like.user_id == user_id,
+        Like.post_id == post_id
+    ).first()
+
+    if existing_like:
+        db.delete(existing_like)
+        db.commit()
+        return {"message": "Like removed successfully"}
+    else:
+        new_like = Like(user_id=user_id, post_id=post_id)
+        db.add(new_like)
+        db.commit()
+        return {"message": "Like added successfully"}
 
 def get_likes(post_id: int, db: Session) -> int:
     likes_count = db.query(Like).filter(Like.post_id == post_id).count()
@@ -290,3 +312,75 @@ def get_reports(db: Session, user_id: int, limit = 10) -> List[LostPetReport]:
     for report in reports:
         report_responses.append(report)
     return report_responses
+
+def create_comment(db: Session, post_id: int, user_id: int, comment: CommentCreate) -> CommentResponse:
+    # Verificamos que el post al que se comenta existe
+    db_post = db.query(Post).filter(Post.id == post_id).first()
+    if not db_post:
+        raise HTTPException(status_code=404, detail="Post no encontrado")
+
+    # Creamos la instancia del comentario
+    db_comment = Comment(
+        content=comment.content,
+        post_id=post_id,
+        user_id=user_id
+    )
+    db.add(db_comment)
+    db.commit()
+    db.refresh(db_comment)
+
+    # Obtenemos los datos del autor para la respuesta
+    author = db.query(User).filter(User.id == user_id).first()
+    author_media = get_media_profile(user_id, db) # Reutilizamos tu lógica de media
+
+    # Devolvemos el comentario recién creado con el formato correcto
+    return CommentResponse(
+        id=db_comment.id,
+        content=db_comment.content,
+        created_at=db_comment.created_at,
+        author=CommentAuthorResponse(
+            id=author.id,
+            first_name=author.first_name,
+            last_name=author.last_name,
+            media=author_media
+        )
+    )
+
+
+def get_comments_for_post(db: Session, post_id: int) -> List[CommentResponse]:
+    # Hacemos un join para obtener los datos del comentario y del autor en una sola consulta
+    results = db.query(Comment, User).join(User, Comment.user_id == User.id).filter(
+        Comment.post_id == post_id).order_by(Comment.created_at.asc()).all()
+
+    response = []
+    for comment, author in results:
+        author_media = get_media_profile(author.id, db)
+        response.append(
+            CommentResponse(
+                id=comment.id,
+                content=comment.content,
+                created_at=comment.created_at,
+                author=CommentAuthorResponse(
+                    id=author.id,
+                    first_name=author.first_name,
+                    last_name=author.last_name,
+                    media=author_media
+                )
+            )
+        )
+    return response
+
+
+def delete_comment(db: Session, comment_id: int, user_id: int):
+    db_comment = db.query(Comment).filter(Comment.id == comment_id).first()
+
+    if not db_comment:
+        raise HTTPException(status_code=404, detail="Comentario no encontrado")
+
+    # ¡Importante! Verificamos que el usuario que intenta borrar es el autor del comentario
+    if db_comment.user_id != user_id:
+        raise HTTPException(status_code=403, detail="No tienes permiso para borrar este comentario")
+
+    db.delete(db_comment)
+    db.commit()
+    return {"message": "Comentario eliminado exitosamente"}

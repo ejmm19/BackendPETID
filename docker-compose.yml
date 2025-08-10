@@ -8,6 +8,11 @@ services:
       - db
     environment:
       - DATABASE_URL=mysql+pymysql://root:rootpassword@db/fastapi_db_petID
+    # ======================== LA SOLUCIÓN ESTÁ AQUÍ ========================
+    # Añadimos un volumen para sincronizar nuestro código local con el contenedor.
+    volumes:
+      - .:/app
+    # =====================================================================
 
   db:
     image: mysql:8.0
@@ -24,4 +29,4 @@ services:
       - mysql_data:/var/lib/mysql
 
 volumes:
-  mysql_data:
+  mysql_data: # ¡Este volumen ya protege tus datos de la base de datos!
